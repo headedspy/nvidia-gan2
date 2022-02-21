@@ -34,12 +34,12 @@ for img in os.listdir('./In/'):
 				'masked_edgemap': '',
 				'masked_image': '',
 				'style_name': str(style),
-                'caption': '',
-                'enable_seg': 'true',
-                'enable_edge': 'false',
-                'enable_caption': 'false',
-                'enable_image': 'false',
-                'use_model12': 'false'
+				'caption': '',
+				'enable_seg': 'true',
+				'enable_edge': 'false',
+				'enable_caption': 'false',
+				'enable_image': 'false',
+				'use_model12': 'false'
 			}
 			requests.post(url + 'gaugan2_infer', data = POSTdata)
 			# get generated img from server
