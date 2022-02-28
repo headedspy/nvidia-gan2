@@ -17,30 +17,60 @@ url = getUrl()
 
 for img in os.listdir('./In/'):
 	print(f'Processing image \'{img}\'')
+	style_img = True
+
+	if str(style).isdigit():
+		style_img = False
 
 	# get b64 encoded image
 	with open('./in/' + img, "rb") as f:
 		imgb64 = 'data:image/png;base64,' + str(base64.b64encode(f.read()))[2:-1]
+
+	if style_img:
+		with open(str(style), "rb") as f:
+			imgb64_style = 'data:image/png;base64,' + str(base64.b64encode(f.read()))[2:-1]
 
 	# generate name for requests
 	name = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
 
 	while True:
 		try:
-			# send map img to server
-			POSTdata = {
-				'name': name,
-				'masked_segmap': imgb64,
-				'masked_edgemap': '',
-				'masked_image': '',
-				'style_name': str(style),
-				'caption': '',
-				'enable_seg': 'true',
-				'enable_edge': 'false',
-				'enable_caption': 'false',
-				'enable_image': 'false',
-				'use_model12': 'false'
-			}
+			if style_img:
+				POSTdata = {
+					'name': name,
+					'file': imgb64_style
+				}
+				requests.post(url + 'gaugan2_receive_style_image', data = POSTdata, stream = True)
+			
+				# send map img to server
+				POSTdata = {
+					'name': name,
+					'masked_segmap': imgb64,
+					'masked_edgemap': '',
+					'masked_image': '',
+					'style_name': 'custom',
+					'caption': '',
+					'enable_seg': 'true',
+					'enable_edge': 'false',
+					'enable_caption': 'false',
+					'enable_image': 'false',
+					'use_model12': 'false'
+				}
+			else:
+				POSTdata = {
+					'name': name,
+					'masked_segmap': imgb64,
+					'masked_edgemap': '',
+					'masked_image': '',
+					'style_name': str(style),
+					'caption': '',
+					'enable_seg': 'true',
+					'enable_edge': 'false',
+					'enable_caption': 'false',
+					'enable_image': 'false',
+					'use_model12': 'false'
+				}
+            
 			requests.post(url + 'gaugan2_infer', data = POSTdata)
 			# get generated img from server
 			POSTdata = {
@@ -49,7 +79,7 @@ for img in os.listdir('./In/'):
 			r = requests.post(url + 'gaugan2_receive_output', data = POSTdata, stream = True)
 			break
 		except:
-			url = getUrl() # if there is an error getting the image, get a new server URL and try again
+			url = getUrl() # if there is an error getting the image get a new server URL and try again
 
 	r.raw.decode_content = True
 
