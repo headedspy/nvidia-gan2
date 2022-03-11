@@ -101,7 +101,6 @@ def processImage(threadName, img):
 list = [None] * int(threads)
 processed_images = 0
 img_list = os.listdir('./In/')
-print(len(img_list))
 
 while processed_images != len(img_list):
 	if i == 0:
