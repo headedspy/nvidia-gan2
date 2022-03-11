@@ -1,21 +1,30 @@
 import requests, re, shutil, os, base64, random, string
 from argparse import ArgumentParser
+from threading import Thread
+from time import sleep
 
 parser = ArgumentParser()
 parser.add_argument('-s', '--style', dest='style')
+parser.add_argument('-t', '--threads', dest='threads')
 args = parser.parse_args()
 
 style = args.style
+threads = args.threads
 
 def getUrl():
-	print('Getting new server address...')
+	print('Getting server address...')
 	r = requests.get('http://54.187.79.102/gaugan2/demo.js')
 	urls = re.findall(r'\'(http.*?://.*?/)\'', re.search(r'urls=.*?;', r.text)[0])
 	return urls[0]
-
+    
 url = getUrl()
+i = 0
+print(f'THREADS: {threads}')
 
-for img in os.listdir('./In/'):
+def processImage(threadName, img):
+	global i
+	global processed_images
+	processed_images += 1
 	print(f'Processing image \'{img}\'')
 	style_img = True
 
@@ -86,3 +95,20 @@ for img in os.listdir('./In/'):
 	# write image to out folder
 	with open('Out/' + img.split('.')[0] + '.jpg','wb') as f:
 		shutil.copyfileobj(r.raw, f)
+
+	i -= 1
+
+list = [None] * int(threads)
+processed_images = 0
+img_list = os.listdir('./In/')
+print(len(img_list))
+
+while processed_images != len(img_list):
+	if i == 0:
+		for thread in range(int(threads)):
+			try:
+				list[i] = Thread(target = processImage, args = (str(i), img_list[processed_images]))
+				list[i].start()
+				i += 1
+			except:
+				print("No more images")
