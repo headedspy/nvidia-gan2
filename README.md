@@ -8,4 +8,6 @@ Modified implementation of https://github.com/JonnyJive5/gaugan that's updated t
 | t / threads  | How many threads can be run at once. It will generate that many images at once | 1, 2, 5, 10 |
 
 Instructions:
-Create a folder and place gan.py in it. Create two folders inside as well, one named 'In' and one named 'Out' Place your input maps in the in folder. In the terminal, navigate to the location of your folder containing the above. This script can be run with the following command: python3 gan.py -s # -t #
+Create a folder and place gan.py in it. Create two folders inside as well, one named 'In' and one named 'Out' Place your input maps in the in folder.
+The script can be run with the following command: python3 gan.py -s # -t #
+The generated images will be saved in th eout folder
